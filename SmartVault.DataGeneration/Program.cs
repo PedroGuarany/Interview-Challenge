@@ -15,10 +15,12 @@ namespace SmartVault.DataGeneration
 
         static void Main(string[] args)
         {
+            // prepared queries for improving performance
             var insertDocument = $"INSERT INTO Document (Id, Name, FilePath, Length, AccountId, CreatedOn) VALUES(@1,@2,@3,@4,@5, @6);";
             var insertUser = $"INSERT INTO User (Id, FirstName, LastName, DateOfBirth, AccountId, Username, Password, CreatedOn) VALUES(@1,@2,@3,@4,@5,@6,@7,@8)";
             var insertAccount = $"INSERT INTO Account (Id, Name, CreatedOn) VALUES(@1,@2,@3)";
             var start = DateTime.UtcNow;
+            // more doc paths for more variety
             var documentPaths = new List<string> { new FileInfo("TestDoc.txt").FullName, new FileInfo("TestDoc2.txt").FullName, new FileInfo("TestDoc3.txt").FullName };
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -26,6 +28,7 @@ namespace SmartVault.DataGeneration
 
             SQLiteConnection.CreateFile(configuration["DatabaseFileName"]);
             File.WriteAllText("TestDoc.txt", $"This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}This is my test document{Environment.NewLine}");
+            //doc with smith property :)
             File.WriteAllText("TestDoc2.txt", $"This is my test that has a Smith Property");
             File.WriteAllText("TestDoc3.txt", $"This is my test that has a Another Property");
 
@@ -35,12 +38,14 @@ namespace SmartVault.DataGeneration
                 var files = Directory.GetFiles(@"..\..\..\..\BusinessObjectSchema");
 
                 connection.Open();
+                //start the seed transaction to improve performance
                 var transaction = connection.BeginTransaction();
                 for (int i = 0; i < files.Length; i++)
                 {
                     var serializer = new XmlSerializer(typeof(BusinessObject));
                     var businessObject = serializer.Deserialize(new StreamReader(files[i])) as BusinessObject;
                     
+                    // every object will have the createdOn
                     var script = businessObject?.Script.Replace(");", ",CreatedOn DATETIME);");
                     connection.Execute(script);
 
@@ -84,6 +89,7 @@ namespace SmartVault.DataGeneration
                     }
 
                 }
+                
                 transaction.Commit();
                 var accountData = connection.Query("SELECT COUNT(*) FROM Account;");
                 Console.WriteLine($"AccountCount: {JsonConvert.SerializeObject(accountData)}");

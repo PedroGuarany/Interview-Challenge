@@ -6,6 +6,7 @@ using System.IO;
 
 namespace SmartVault.Program.QueryLayer
 {
+    // main class for requirements 3 and 4, holding the logic
     public class FileDAL
     {
         private readonly DbManager manager;
