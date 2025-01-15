@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<businessObject>
+	<propertyGroup>
+		<property name="ClientId" type="string" />
+		<property name="ClientSecret" type="string" />
+		<property name="RedirectUri" type="string" />
+		<property name="GrantType" type="string" />
+		<property name="AuthCode" type="string" />
+		<property name="AuthCodeExpiry" type="System.DateTime" />
+		<property name="AccessToken" type="string" />
+		<property name="AccessTokenExpiry" type="System.DateTime" />
+		<property name="RefreshToken" type="string" />
+		<property name="RefreshTokenExpiry" type="System.DateTime" />
+	</propertyGroup>
+	<script>
+		CREATE TABLE OAuthUser (
+		ClientId TEXT PRIMARY KEY,
+		ClientSecret TEXT,
+		RedirectUri TEXT,
+		GrantType TEXT,
+		AuthCode TEXT,
+		AuthCodeExpiry TEXT,
+		AccessToken TEXT,
+		AccessTokenExpiry TEXT,
+		RefreshToken TEXT,
+		RefreshTokenExpiry TEXT
+		);
+	</script>
+</businessObject>
